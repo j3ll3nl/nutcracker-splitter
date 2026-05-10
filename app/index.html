@@ -5,839 +5,108 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bladmuziek Knipper</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --color-bg: #0f1117;
-      --color-surface: #1a1d26;
-      --color-surface-2: #22263a;
-      --color-border: #2e3348;
-      --color-border-info: #3b82f6;
-      --color-text: #e2e8f0;
-      --color-text-muted: #8892a4;
-      --color-primary: #e2e8f0;
-      --color-primary-bg: #2d3148;
-      --color-accent: #C43E1C;
-      --color-accent-hover: #a8330f;
-      --color-success: #22c55e;
-      --color-success-bg: #14532d;
-      --color-info: #3b82f6;
-      --color-info-bg: #1e3a5f;
-      --color-warning: #f59e0b;
-      --radius: 8px;
-      --radius-sm: 5px;
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "jszip": "https://cdn.jsdelivr.net/npm/jszip@3.10.1/+esm"
     }
-
-    body {
-      background: var(--color-bg);
-      color: var(--color-text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 14px;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-
-    .container {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 32px 20px 64px;
-    }
-
-    /* Header */
-    .header { margin-bottom: 28px; }
-    .header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; }
-    .header p { color: var(--color-text-muted); margin-top: 4px; }
-
-    /* Drop zone */
-    .dropzone {
-      border: 2px dashed var(--color-border);
-      border-radius: var(--radius);
-      background: var(--color-surface);
-      padding: 36px 24px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
-      margin-bottom: 20px;
-    }
-    .dropzone:hover, .dropzone.dragover { border-color: var(--color-info); background: var(--color-surface-2); }
-    .dropzone.loaded { border-color: var(--color-success); border-style: solid; }
-    .dropzone-icon { font-size: 36px; color: var(--color-text-muted); margin-bottom: 10px; }
-    .dropzone.loaded .dropzone-icon { color: var(--color-success); }
-    .dropzone-main { font-size: 15px; font-weight: 500; }
-    .dropzone-sub { color: var(--color-text-muted); font-size: 12px; margin-top: 4px; line-height: 1.5; }
-    .dropzone-info { margin-top: 8px; font-size: 13px; color: var(--color-success); }
-    #fileInput { display: none; }
-
-    /* Settings card */
-    .card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      margin-bottom: 20px;
-    }
-    .card-section {
-      padding: 18px 20px;
-    }
-    .card-section + .card-section {
-      border-top: 1px solid var(--color-border);
-    }
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: var(--color-text-muted);
-      margin-bottom: 14px;
-    }
-    .field-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .field-row:last-child { margin-bottom: 0; }
-    .field-label {
-      flex: 0 0 180px;
-      color: var(--color-text);
-    }
-    .field-control { flex: 1; display: flex; align-items: center; gap: 8px; }
-
-    input[type="number"], input[type="text"] {
-      background: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      color: var(--color-text);
-      padding: 6px 10px;
-      font-size: 14px;
-      width: 80px;
-      outline: none;
-      transition: border-color 0.15s;
-    }
-    input[type="number"]:focus, input[type="text"]:focus { border-color: var(--color-info); }
-    input[type="text"] { width: 200px; }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--color-border);
-      height: 4px;
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-      width: 140px;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: var(--color-info);
-      cursor: pointer;
-    }
-    input[type="range"]::-moz-range-thumb {
-      width: 16px; height: 16px;
-      border-radius: 50%;
-      background: var(--color-info);
-      cursor: pointer;
-      border: none;
-    }
-
-    .range-value {
-      min-width: 28px;
-      text-align: right;
-      color: var(--color-text-muted);
-      font-size: 13px;
-    }
-
-    input[type="checkbox"] {
-      width: 16px; height: 16px;
-      accent-color: var(--color-info);
-      cursor: pointer;
-    }
-
-    .hint-text {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      margin-top: 8px;
-      padding: 8px 10px;
-      background: var(--color-surface-2);
-      border-radius: var(--radius-sm);
-      border-left: 3px solid var(--color-border);
-    }
-    .hint-text.detected { border-left-color: var(--color-success); color: var(--color-success); }
-    .hint-text.not-detected { border-left-color: var(--color-warning); color: var(--color-warning); }
-
-    /* Buttons row */
-    .actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 16px;
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s, opacity 0.15s, color 0.15s;
-      text-decoration: none;
-    }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-primary {
-      background: var(--color-primary-bg);
-      color: var(--color-primary);
-      border: 1px solid var(--color-border);
-    }
-    .btn-primary:not(:disabled):hover { background: #384060; }
-    .btn-secondary {
-      background: var(--color-surface);
-      color: var(--color-text);
-      border: 1px solid var(--color-border);
-    }
-    .btn-secondary:not(:disabled):hover { background: var(--color-surface-2); }
-    .btn-accent {
-      background: var(--color-accent);
-      color: #fff;
-    }
-    .btn-accent:not(:disabled):hover { background: var(--color-accent-hover); }
-    .btn-copy {
-      background: var(--color-surface-2);
-      color: var(--color-text);
-      border: 1px solid var(--color-border);
-    }
-    .btn-copy:not(:disabled):hover { background: #2d3148; }
-    .btn-copy.copied { background: var(--color-success-bg); color: var(--color-success); border-color: var(--color-success); }
-    .btn-sm { padding: 6px 12px; font-size: 13px; }
-
-    /* Status */
-    .status {
-      font-size: 13px;
-      color: var(--color-text-muted);
-      min-height: 20px;
-      margin-bottom: 20px;
-    }
-    .status.success { color: var(--color-success); }
-    .status.error { color: #f87171; }
-
-    /* Instruction banner */
-    .instruction-banner {
-      display: none;
-      align-items: flex-start;
-      gap: 10px;
-      background: var(--color-info-bg);
-      border: 1px solid var(--color-border-info);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 24px;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .instruction-banner.visible { display: flex; }
-    .instruction-banner i { font-size: 18px; color: var(--color-info); flex-shrink: 0; margin-top: 1px; }
-
-    /* Slide list */
-    .slides-section { display: none; }
-    .slides-section.visible { display: block; }
-    .slides-title {
-      font-size: 16px;
-      font-weight: 600;
-      margin-bottom: 14px;
-    }
-
-    .slide-row {
-      display: flex;
-      align-items: stretch;
-      gap: 0;
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius);
-      margin-bottom: 12px;
-      overflow: hidden;
-      transition: border-color 0.15s;
-    }
-    .slide-row.has-title { border-color: var(--color-border-info); }
-
-    .slide-thumb {
-      width: 220px;
-      flex-shrink: 0;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .slide-thumb img {
-      width: 100%;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
-
-    .slide-info {
-      flex: 1;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .slide-meta {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .slide-name {
-      font-size: 15px;
-      font-weight: 600;
-    }
-    .slide-detail {
-      font-size: 12px;
-      color: var(--color-text-muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      background: var(--color-info-bg);
-      color: var(--color-info);
-      border: 1px solid var(--color-border-info);
-      border-radius: 4px;
-      padding: 1px 7px;
-      font-size: 11px;
-      font-weight: 500;
-    }
-
-    .slide-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-  </style>
+  }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
 </head>
 <body>
-<div class="container">
+  <div class="container">
 
-  <!-- Header -->
-  <div class="header">
-    <h1><i class="ti ti-music"></i> Bladmuziek Knipper</h1>
-    <p>Splits bladmuziek automatisch op in PowerPoint slides</p>
-  </div>
+    <header class="header">
+      <h1><i class="ti ti-music"></i> Bladmuziek Knipper</h1>
+      <p>Splits bladmuziek automatisch op in PowerPoint slides</p>
+    </header>
 
-  <!-- Drop zone -->
-  <div class="dropzone" id="dropzone">
-    <div class="dropzone-icon"><i class="ti ti-photo-up" id="dropzoneIcon"></i></div>
-    <div class="dropzone-main" id="dropzoneMain">Sleep afbeelding hierheen of klik om te uploaden</div>
-    <div class="dropzone-sub" id="dropzoneSub">Of plak direct met Ctrl+V / Cmd+V<br>PNG, JPG — zwarte achtergrond met witte noten</div>
-    <div class="dropzone-info" id="dropzoneInfo"></div>
-  </div>
-  <input type="file" id="fileInput" accept="image/*">
+    <div class="dropzone" id="dropzone">
+      <div class="dropzone-icon"><i class="ti ti-photo-up" id="dropzoneIcon"></i></div>
+      <div class="dropzone-main" id="dropzoneMain">Sleep afbeelding hierheen of klik om te uploaden</div>
+      <div class="dropzone-sub" id="dropzoneSub">Of plak direct met Ctrl+V / Cmd+V<br>PNG, JPG — zwarte achtergrond met witte noten</div>
+      <div class="dropzone-info" id="dropzoneInfo"></div>
+    </div>
+    <input type="file" id="fileInput" accept="image/*">
 
-  <!-- Settings -->
-  <div class="card">
-    <!-- Notenbalken -->
-    <div class="card-section">
-      <div class="section-label">Notenbalken</div>
-      <div class="field-row">
-        <div class="field-label">Regels per slide</div>
-        <div class="field-control">
-          <input type="number" id="linesPerSlide" value="4" min="1" max="12">
+    <div class="card">
+      <div class="card-section">
+        <div class="section-label">Notenbalken</div>
+        <div class="field-row">
+          <div class="field-label">Regels per slide</div>
+          <div class="field-control">
+            <input type="number" id="linesPerSlide" value="4" min="1" max="12">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Gap gevoeligheid</div>
+          <div class="field-control">
+            <input type="range" id="threshold" min="1" max="60" value="12">
+            <span class="range-value" id="thresholdVal">12</span>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field-label">Min. gap (px)</div>
+          <div class="field-control">
+            <input type="number" id="minGap" value="6" min="1" max="80">
+          </div>
         </div>
       </div>
-      <div class="field-row">
-        <div class="field-label">Gap gevoeligheid</div>
-        <div class="field-control">
-          <input type="range" id="threshold" min="1" max="60" value="12">
-          <span class="range-value" id="thresholdVal">12</span>
+      <div class="card-section">
+        <div class="section-label">Titelregel</div>
+        <div class="field-row">
+          <div class="field-label">Automatisch detecteren</div>
+          <div class="field-control">
+            <input type="checkbox" id="titleAuto" checked>
+          </div>
         </div>
+        <div class="field-row" id="titleManualRow" style="display:none;">
+          <div class="field-label">Titelzone hoogte (px)</div>
+          <div class="field-control">
+            <input type="number" id="titleManualPx" value="80" min="0" max="500">
+          </div>
+        </div>
+        <div class="hint-text" id="titleHint">Verwerk een afbeelding om de titelzone te detecteren.</div>
       </div>
-      <div class="field-row">
-        <div class="field-label">Min. gap (px)</div>
-        <div class="field-control">
-          <input type="number" id="minGap" value="6" min="1" max="80">
+      <div class="card-section">
+        <div class="section-label">Export</div>
+        <div class="field-row">
+          <div class="field-label">Bestandsnaam</div>
+          <div class="field-control">
+            <input type="text" id="filename" value="bladmuziek">
+          </div>
         </div>
       </div>
     </div>
-    <!-- Titelregel -->
-    <div class="card-section">
-      <div class="section-label">Titelregel</div>
-      <div class="field-row">
-        <div class="field-label">Automatisch detecteren</div>
-        <div class="field-control">
-          <input type="checkbox" id="titleAuto" checked>
-        </div>
-      </div>
-      <div class="field-row" id="titleManualRow" style="display:none;">
-        <div class="field-label">Titelzone hoogte (px)</div>
-        <div class="field-control">
-          <input type="number" id="titleManualPx" value="80" min="0" max="500">
-        </div>
-      </div>
-      <div class="hint-text" id="titleHint">Verwerk een afbeelding om de titelzone te detecteren.</div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btnProcess" disabled>
+        <i class="ti ti-wand"></i> Verwerk afbeelding
+      </button>
+      <button class="btn btn-secondary" id="btnZip" disabled>
+        <i class="ti ti-file-zip"></i> Download ZIP
+      </button>
+      <button class="btn btn-accent" id="btnPptx" disabled>
+        <i class="ti ti-presentation"></i> Exporteer naar PowerPoint
+      </button>
     </div>
-    <!-- Export -->
-    <div class="card-section">
-      <div class="section-label">Export</div>
-      <div class="field-row">
-        <div class="field-label">Bestandsnaam</div>
-        <div class="field-control">
-          <input type="text" id="filename" value="bladmuziek">
-        </div>
-      </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="instruction-banner" id="instructionBanner">
+      <i class="ti ti-info-circle"></i>
+      <span>Klik op <strong>Kopieer</strong> naast een slide, schakel naar PowerPoint, maak een nieuwe slide aan en druk <strong>Ctrl+V</strong> (of <strong>Cmd+V</strong> op Mac) om te plakken.</span>
     </div>
+
+    <section class="slides-section" id="slidesSection">
+      <div class="slides-title" id="slidesTitle"></div>
+      <div id="slideList"></div>
+    </section>
+
   </div>
 
-  <!-- Action buttons -->
-  <div class="actions">
-    <button class="btn btn-primary" id="btnProcess" disabled>
-      <i class="ti ti-wand"></i> Verwerk afbeelding
-    </button>
-    <button class="btn btn-secondary" id="btnZip" disabled>
-      <i class="ti ti-file-zip"></i> Download ZIP
-    </button>
-    <button class="btn btn-accent" id="btnPptx" disabled>
-      <i class="ti ti-presentation"></i> Exporteer naar PowerPoint
-    </button>
-  </div>
-
-  <!-- Status -->
-  <div class="status" id="status"></div>
-
-  <!-- Instruction banner -->
-  <div class="instruction-banner" id="instructionBanner">
-    <i class="ti ti-info-circle"></i>
-    <span>Klik op <strong>Kopieer</strong> naast een slide, schakel naar PowerPoint, maak een nieuwe slide aan en druk <strong>Ctrl+V</strong> (of <strong>Cmd+V</strong> op Mac) om te plakken.</span>
-  </div>
-
-  <!-- Slides -->
-  <div class="slides-section" id="slidesSection">
-    <div class="slides-title" id="slidesTitle"></div>
-    <div id="slideList"></div>
-  </div>
-
-</div>
-
-<!-- Offscreen canvas for image processing -->
-<canvas id="offscreenCanvas" style="display:none;"></canvas>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
-<script>
-  // --- State ---
-  let loadedImage = null;
-  let chunks = [];
-
-  // --- DOM refs ---
-  const dropzone      = document.getElementById('dropzone');
-  const dropzoneIcon  = document.getElementById('dropzoneIcon');
-  const dropzoneMain  = document.getElementById('dropzoneMain');
-  const dropzoneSub   = document.getElementById('dropzoneSub');
-  const dropzoneInfo  = document.getElementById('dropzoneInfo');
-  const fileInput     = document.getElementById('fileInput');
-  const btnProcess    = document.getElementById('btnProcess');
-  const btnZip        = document.getElementById('btnZip');
-  const btnPptx       = document.getElementById('btnPptx');
-  const statusEl      = document.getElementById('status');
-  const instructionBanner = document.getElementById('instructionBanner');
-  const slidesSection = document.getElementById('slidesSection');
-  const slidesTitle   = document.getElementById('slidesTitle');
-  const slideList     = document.getElementById('slideList');
-  const thresholdInput = document.getElementById('threshold');
-  const thresholdVal  = document.getElementById('thresholdVal');
-  const titleAutoCheck = document.getElementById('titleAuto');
-  const titleManualRow = document.getElementById('titleManualRow');
-  const titleHint     = document.getElementById('titleHint');
-  const canvas        = document.getElementById('offscreenCanvas');
-  const ctx           = canvas.getContext('2d');
-
-  // --- Settings wiring ---
-  thresholdInput.addEventListener('input', () => {
-    thresholdVal.textContent = thresholdInput.value;
-  });
-
-  titleAutoCheck.addEventListener('change', () => {
-    titleManualRow.style.display = titleAutoCheck.checked ? 'none' : 'flex';
-  });
-
-  // --- Image loading helpers ---
-  function loadImageFromFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      loadedImage = img;
-      updateDropzoneLoaded(file.name, img.width, img.height);
-    };
-    img.src = url;
-  }
-
-  function loadImageFromBlob(blob) {
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-    img.onload = () => {
-      loadedImage = img;
-      updateDropzoneLoaded('geplakte afbeelding', img.width, img.height);
-    };
-    img.src = url;
-  }
-
-  function updateDropzoneLoaded(name, w, h) {
-    dropzone.classList.add('loaded');
-    dropzoneIcon.className = 'ti ti-circle-check';
-    dropzoneMain.textContent = name;
-    dropzoneSub.textContent = '';
-    dropzoneInfo.textContent = `${w} × ${h} px`;
-    btnProcess.disabled = false;
-    setStatus('');
-    titleHint.textContent = 'Verwerk de afbeelding om de titelzone te detecteren.';
-    titleHint.className = 'hint-text';
-  }
-
-  // --- Drop zone events ---
-  dropzone.addEventListener('click', () => fileInput.click());
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files[0]) loadImageFromFile(fileInput.files[0]);
-    fileInput.value = '';
-  });
-
-  dropzone.addEventListener('dragover', e => {
-    e.preventDefault();
-    dropzone.classList.add('dragover');
-  });
-
-  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-
-  dropzone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropzone.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file) loadImageFromFile(file);
-  });
-
-  document.addEventListener('paste', e => {
-    const items = e.clipboardData && e.clipboardData.items;
-    if (!items) return;
-    for (const item of items) {
-      if (item.type.startsWith('image/')) {
-        loadImageFromBlob(item.getAsFile());
-        break;
-      }
-    }
-  });
-
-  // --- Status helper ---
-  function setStatus(msg, type = '') {
-    statusEl.textContent = msg;
-    statusEl.className = 'status' + (type ? ' ' + type : '');
-  }
-
-  // --- Core image processing algorithm ---
-  function processImage(img, lps, threshold, minGap, titleAuto, titleManualPx) {
-    const W = img.width, H = img.height;
-    canvas.width = W; canvas.height = H;
-    ctx.drawImage(img, 0, 0);
-    const data = ctx.getImageData(0, 0, W, H).data;
-
-    // Row brightness
-    const rowBright = new Float32Array(H);
-    for (let y = 0; y < H; y++) {
-      let sum = 0;
-      for (let x = 0; x < W; x++) {
-        const i = (y * W + x) * 4;
-        sum += (data[i] + data[i + 1] + data[i + 2]) / 3;
-      }
-      rowBright[y] = sum / W;
-    }
-
-    // Dark rows
-    const isDark = Array.from(rowBright, b => b < threshold);
-
-    // Gaps (dark zones between staves)
-    const gaps = [];
-    let inGap = false, gStart = 0;
-    for (let y = 0; y < H; y++) {
-      if (isDark[y] && !inGap) { inGap = true; gStart = y; }
-      else if (!isDark[y] && inGap) {
-        inGap = false;
-        if (y - gStart >= minGap) gaps.push({ s: gStart, e: y - 1 });
-      }
-    }
-    if (inGap && H - gStart >= minGap) gaps.push({ s: gStart, e: H - 1 });
-
-    // Zones between gaps
-    const zones = [];
-    let prev = 0;
-    for (const g of gaps) {
-      if (g.s > prev) zones.push({ s: prev, e: g.s - 1 });
-      prev = g.e + 1;
-    }
-    if (prev < H) zones.push({ s: prev, e: H - 1 });
-    const allZones = zones.filter(z => z.e - z.s >= 10);
-
-    // Title zone detection
-    let titleBottom = 0;
-    if (titleAuto && allZones.length > 1) {
-      function staffScore(zone) {
-        let bright = 0;
-        for (let y = zone.s; y <= zone.e; y++) if (rowBright[y] > threshold + 10) bright++;
-        return bright / (zone.e - zone.s + 1);
-      }
-      const scores = allZones.map(staffScore);
-      const avgRest = scores.slice(1).reduce((a, b) => a + b, 0) / (scores.length - 1);
-      if (scores[0] < avgRest * 0.75) {
-        titleBottom = allZones[0].e + 1;
-      }
-    } else if (!titleAuto) {
-      titleBottom = titleManualPx;
-    }
-
-    // Staff zones (below title)
-    const staffZones = allZones.filter(z => z.s >= titleBottom);
-
-    // Group by lps lines; first group gets title area
-    const groups = [];
-    for (let i = 0; i < staffZones.length; i += lps) {
-      const g = staffZones.slice(i, i + lps);
-      const top    = (i === 0 && titleBottom > 0) ? 0 : g[0].s;
-      const bottom = g[g.length - 1].e;
-      groups.push({ top, bottom, lines: g.length, hasTitle: i === 0 && titleBottom > 0 });
-    }
-
-    // Crop each group to PNG blob + base64
-    return Promise.all(groups.map((grp, idx) => {
-      const h = grp.bottom - grp.top + 1;
-      const off = document.createElement('canvas');
-      off.width = W; off.height = h;
-      off.getContext('2d').drawImage(img, 0, grp.top, W, h, 0, 0, W, h);
-      return new Promise(res => {
-        off.toBlob(blob => {
-          const fr = new FileReader();
-          fr.onload = e => {
-            res({
-              blob,
-              idx,
-              lines: grp.lines,
-              hasTitle: grp.hasTitle,
-              b64: e.target.result.split(',')[1],
-              imgW: W,
-              imgH: h
-            });
-          };
-          fr.readAsDataURL(blob);
-        }, 'image/png');
-      });
-    }));
-  }
-
-  // --- Process button ---
-  btnProcess.addEventListener('click', async () => {
-    if (!loadedImage) return;
-    btnProcess.disabled = true;
-    setStatus('Bezig met verwerken…');
-
-    const lps         = parseInt(document.getElementById('linesPerSlide').value) || 4;
-    const threshold   = parseInt(thresholdInput.value) || 12;
-    const minGap      = parseInt(document.getElementById('minGap').value) || 6;
-    const titleAuto   = titleAutoCheck.checked;
-    const titleManPx  = parseInt(document.getElementById('titleManualPx').value) || 80;
-
-    try {
-      chunks = await processImage(loadedImage, lps, threshold, minGap, titleAuto, titleManPx);
-
-      if (chunks.length === 0) {
-        setStatus('Geen notenbalken gevonden. Pas de instellingen aan en probeer opnieuw.', 'error');
-        titleHint.textContent = 'Geen zones gedetecteerd.';
-        titleHint.className = 'hint-text not-detected';
-        btnProcess.disabled = false;
-        return;
-      }
-
-      // Update title hint
-      const titleChunk = chunks.find(c => c.hasTitle);
-      if (titleChunk) {
-        titleHint.textContent = 'Titelzone gedetecteerd en samengevoegd met slide 1.';
-        titleHint.className = 'hint-text detected';
-      } else {
-        titleHint.textContent = 'Geen aparte titelzone gedetecteerd.';
-        titleHint.className = 'hint-text';
-      }
-
-      renderSlides(chunks);
-      btnZip.disabled = false;
-      btnPptx.disabled = false;
-      btnProcess.disabled = false;
-      setStatus(`${chunks.length} slides verwerkt.`, 'success');
-    } catch (err) {
-      setStatus('Fout bij verwerken: ' + err.message, 'error');
-      btnProcess.disabled = false;
-    }
-  });
-
-  // --- Render slides ---
-  function renderSlides(chunks) {
-    slideList.innerHTML = '';
-    slidesTitle.textContent = `${chunks.length} slides klaar`;
-    slidesSection.classList.add('visible');
-    instructionBanner.classList.add('visible');
-
-    chunks.forEach(chunk => {
-      const thumbUrl = URL.createObjectURL(chunk.blob);
-
-      const row = document.createElement('div');
-      row.className = 'slide-row' + (chunk.hasTitle ? ' has-title' : '');
-
-      // Thumbnail
-      const thumbDiv = document.createElement('div');
-      thumbDiv.className = 'slide-thumb';
-      const img = document.createElement('img');
-      img.src = thumbUrl;
-      img.alt = `Slide ${chunk.idx + 1}`;
-      thumbDiv.appendChild(img);
-
-      // Info
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'slide-info';
-
-      const metaDiv = document.createElement('div');
-      metaDiv.className = 'slide-meta';
-
-      const nameEl = document.createElement('div');
-      nameEl.className = 'slide-name';
-      nameEl.textContent = `Slide ${chunk.idx + 1}`;
-
-      const detailEl = document.createElement('div');
-      detailEl.className = 'slide-detail';
-      detailEl.textContent = `${chunk.lines} notenregel${chunk.lines !== 1 ? 's' : ''}`;
-
-      if (chunk.hasTitle) {
-        const badge = document.createElement('span');
-        badge.className = 'badge';
-        badge.innerHTML = '<i class="ti ti-text-size"></i> incl. titel';
-        detailEl.appendChild(badge);
-      }
-
-      metaDiv.appendChild(nameEl);
-      metaDiv.appendChild(detailEl);
-
-      // Actions
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'slide-actions';
-
-      // Copy button
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'btn btn-copy btn-sm';
-      copyBtn.innerHTML = '<i class="ti ti-copy"></i> Kopieer';
-      copyBtn.addEventListener('click', () => copyChunkToClipboard(chunk, copyBtn));
-
-      // Download link
-      const dlLink = document.createElement('a');
-      dlLink.className = 'btn btn-secondary btn-sm';
-      dlLink.innerHTML = '<i class="ti ti-download"></i> PNG';
-      dlLink.href = thumbUrl;
-      dlLink.download = `slide-${String(chunk.idx + 1).padStart(2, '0')}.png`;
-
-      actionsDiv.appendChild(copyBtn);
-      actionsDiv.appendChild(dlLink);
-
-      infoDiv.appendChild(metaDiv);
-      infoDiv.appendChild(actionsDiv);
-
-      row.appendChild(thumbDiv);
-      row.appendChild(infoDiv);
-      slideList.appendChild(row);
-    });
-  }
-
-  // --- Clipboard copy ---
-  async function copyChunkToClipboard(chunk, btn) {
-    try {
-      const item = new ClipboardItem({ 'image/png': chunk.blob });
-      await navigator.clipboard.write([item]);
-      btn.classList.add('copied');
-      btn.innerHTML = '<i class="ti ti-check"></i> Gekopieerd!';
-      setTimeout(() => {
-        btn.classList.remove('copied');
-        btn.innerHTML = '<i class="ti ti-copy"></i> Kopieer';
-      }, 2500);
-    } catch (err) {
-      btn.innerHTML = '<i class="ti ti-x"></i> Niet beschikbaar';
-      setTimeout(() => {
-        btn.innerHTML = '<i class="ti ti-copy"></i> Kopieer';
-      }, 2500);
-    }
-  }
-
-  // --- ZIP export ---
-  async function exportZip(chunks, filename) {
-    const zip = new JSZip();
-    chunks.forEach((c, i) => {
-      zip.file(`slide-${String(i + 1).padStart(2, '0')}.png`, c.blob);
-    });
-    const blob = await zip.generateAsync({ type: 'blob' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename + '-slides.zip';
-    a.click();
-  }
-
-  // --- PPTX export ---
-  async function exportPptx(chunks, filename) {
-    const pres = new PptxGenJS();
-    pres.layout = 'LAYOUT_16x9';
-    const SW = 10, SH = 5.625;
-    for (const c of chunks) {
-      const slide = pres.addSlide();
-      slide.background = { color: '000000' };
-      const ratio = c.imgW / c.imgH;
-      let dW, dH;
-      if (ratio > SW / SH) { dW = SW; dH = SW / ratio; }
-      else                  { dH = SH; dW = SH * ratio; }
-      const x = (SW - dW) / 2, y = (SH - dH) / 2;
-      slide.addImage({
-        data: 'image/png;base64,' + c.b64,
-        x, y, w: dW, h: dH,
-        altText: `Bladmuziek slide ${c.idx + 1}`
-      });
-    }
-    await pres.writeFile({ fileName: filename + '.pptx' });
-  }
-
-  // --- Button handlers ---
-  btnZip.addEventListener('click', async () => {
-    if (!chunks.length) return;
-    btnZip.disabled = true;
-    setStatus('ZIP aanmaken…');
-    try {
-      await exportZip(chunks, document.getElementById('filename').value || 'bladmuziek');
-      setStatus('ZIP gedownload.', 'success');
-    } catch (err) {
-      setStatus('Fout bij ZIP export: ' + err.message, 'error');
-    }
-    btnZip.disabled = false;
-  });
-
-  btnPptx.addEventListener('click', async () => {
-    if (!chunks.length) return;
-    btnPptx.disabled = true;
-    setStatus('PowerPoint aanmaken…');
-    try {
-      await exportPptx(chunks, document.getElementById('filename').value || 'bladmuziek');
-      setStatus('PowerPoint geëxporteerd.', 'success');
-    } catch (err) {
-      setStatus('Fout bij PowerPoint export: ' + err.message, 'error');
-    }
-    btnPptx.disabled = false;
-  });
-</script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>
